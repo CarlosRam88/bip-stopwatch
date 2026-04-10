@@ -8,6 +8,7 @@ import SessionControls from './SessionControls'
 import WRStatsCards from './WRStatsCards'
 import SessionDetailCards from './SessionDetailCards'
 import SequencesTable from './SegmentsTable'
+import Image from 'next/image'
 
 export default function BipStopwatch() {
   const sw = useStopwatch()
@@ -31,11 +32,21 @@ export default function BipStopwatch() {
       <div className="mx-auto max-w-3xl px-4 py-8 space-y-5">
         {/* ── Header ────────────────────────────────────────────────────── */}
         <header className="text-center pb-2">
+          <div className="flex justify-center mb-2">
+            <Image
+              src="/scotlandlogo.png"
+              alt="Scottish Rugby Logo"
+              width={80}
+              height={80}
+            />
+          </div>
+
           <h1 className="font-mono text-2xl font-bold tracking-[0.25em] text-bip-accent uppercase">
             BIP Stopwatch
           </h1>
+
           <p className="mt-1 text-xs tracking-widest text-bip-muted uppercase">
-            Ball-in-Play Session Timer
+            Scottish Rugby Athletic Performance & Sports Science
           </p>
         </header>
 
