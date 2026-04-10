@@ -77,7 +77,7 @@ export default function DrillSetup({
             onChange={(e) => onSetDrillName(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={disabled}
-            placeholder="e.g. 3v2 Attacking Shape"
+            placeholder="e.g. Gameflow"
             className="h-10 rounded border border-bip-border bg-bip-bg px-3 text-sm text-bip-text
                        placeholder:text-bip-muted/50
                        focus:outline-none focus:ring-1 focus:ring-bip-accent
