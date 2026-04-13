@@ -25,7 +25,7 @@ export default function SequencesTable({ sequences }: SequencesTableProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-bip-border text-left">
-              {['Date', 'Day Code', 'Drill #', 'Drill Name', 'Seq #', 'State', 'Duration'].map(
+              {['Drill Name', 'Seq #', 'State', 'Duration'].map(
                 (h) => (
                   <th
                     key={h}
@@ -50,9 +50,6 @@ export default function SequencesTable({ sequences }: SequencesTableProps) {
                               ${isDrillBoundary ? 'border-t-2 border-t-bip-border' : ''}
                               hover:bg-bip-panel/50`}
                 >
-                  <td className="px-4 py-2.5 text-bip-muted whitespace-nowrap">{seq.date}</td>
-                  <td className="px-4 py-2.5 text-bip-text whitespace-nowrap">{seq.dayCode}</td>
-                  <td className="px-4 py-2.5 text-bip-muted text-center">{seq.drillNumber}</td>
                   <td className="px-4 py-2.5 text-bip-text">{seq.drillName}</td>
                   <td className="px-4 py-2.5 text-bip-muted text-center">{seq.sequenceNumber}</td>
                   <td className="px-4 py-2.5 whitespace-nowrap">

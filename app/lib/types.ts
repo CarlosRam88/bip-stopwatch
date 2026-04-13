@@ -35,6 +35,13 @@ export interface WRStats {
   percentage: number | null
 }
 
+export interface DrillSummary {
+  drillNumber: number
+  drillName: string
+  isActive: boolean
+  stats: WRStats
+}
+
 export interface ActiveDrill {
   drillNumber: number
   drillName: string

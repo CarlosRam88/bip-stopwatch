@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { Sequence, ActiveDrill, WRStats, SessionDetailStats } from '../lib/types'
+import type { Sequence, ActiveDrill, WRStats, SessionDetailStats, DrillSummary } from '../lib/types'
 import { formatDate, exportToCSV, computeWRStats, computeSessionDetailStats } from '../lib/utils'
 
 export interface StopwatchReturn {
@@ -23,6 +23,8 @@ export interface StopwatchReturn {
   sessionStats: WRStats
   /** Session-level detail stats: longest In Play, long-sequence count/% */
   sessionDetail: SessionDetailStats
+  /** Per-drill W:R% summaries, in order, including the active drill */
+  drillSummaries: DrillSummary[]
 
   // ── Derived UI flags ───────────────────────────────────────────────────────
   canStartDrill: boolean
@@ -204,6 +206,32 @@ export function useStopwatch(): StopwatchReturn {
     elapsedMs
   )
 
+  // Collect unique drill numbers in the order they first appeared
+  const seenDrillNums: number[] = []
+  for (const s of sequences) {
+    if (!seenDrillNums.includes(s.drillNumber)) seenDrillNums.push(s.drillNumber)
+  }
+  if (activeDrill && !seenDrillNums.includes(activeDrill.drillNumber)) {
+    seenDrillNums.push(activeDrill.drillNumber)
+  }
+
+  const drillSummaries: DrillSummary[] = seenDrillNums.map((num) => {
+    const isActive = activeDrill?.drillNumber === num
+    const name = isActive
+      ? activeDrill!.drillName
+      : sequences.find((s) => s.drillNumber === num)?.drillName ?? ''
+    return {
+      drillNumber: num,
+      drillName: name,
+      isActive,
+      stats: computeWRStats(
+        sequences.filter((s) => s.drillNumber === num),
+        isActive ? activeDrill!.state : null,
+        isActive ? elapsedMs : 0
+      ),
+    }
+  })
+
   return {
     dayCode,
     drillNameInput,
@@ -215,6 +243,7 @@ export function useStopwatch(): StopwatchReturn {
     currentDrillName,
     sessionStats,
     sessionDetail,
+    drillSummaries,
 
     canStartDrill:
       Boolean(dayCode && drillNameInput.trim()) &&

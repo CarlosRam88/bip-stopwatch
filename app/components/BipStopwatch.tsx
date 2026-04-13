@@ -7,6 +7,7 @@ import ActiveDrillPanel from './ActiveDrillPanel'
 import SessionControls from './SessionControls'
 import WRStatsCards from './WRStatsCards'
 import SessionDetailCards from './SessionDetailCards'
+import DrillSummaryCard from './DrillSummaryCard'
 import SequencesTable from './SegmentsTable'
 import Image from 'next/image'
 
@@ -91,6 +92,9 @@ export default function BipStopwatch() {
 
         {/* ── Session Detail Stats ─────────────────────────────────────── */}
         <SessionDetailCards detail={sw.sessionDetail} />
+
+        {/* ── Drill Breakdown ───────────────────────────────────────────── */}
+        <DrillSummaryCard summaries={sw.drillSummaries} />
 
         {/* ── Session Controls ──────────────────────────────────────────── */}
         <SessionControls
