@@ -41,9 +41,6 @@ body {
 /* ── Print ─────────────────────────────────────────────────────────────────── */
 @media print {
   html, body {
-    background: white;
-    background-image: none;
-    color: black;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }

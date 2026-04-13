@@ -73,7 +73,7 @@ export default function SessionTimeline({ sequences, activeDrill, elapsedMs }: S
               title={`${seg.drillName} · ${isInPlay ? 'In Play' : 'Out of Play'} · ${formatDuration(seg.durationMs)}`}
               className={`h-full relative transition-[width] duration-100 ${
                 isInPlay ? 'bg-in-play' : 'bg-out-play'
-              } ${isDrillBoundary ? 'border-l-2 border-bip-panel' : ''} ${
+              } ${isDrillBoundary ? 'border-l-4 border-bip-panel' : ''} ${
                 seg.isActive ? 'opacity-70' : ''
               }`}
               style={{ width: `${widthPct}%`, minWidth: widthPct > 0 ? 2 : 0 }}
