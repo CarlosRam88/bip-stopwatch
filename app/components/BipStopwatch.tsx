@@ -8,6 +8,8 @@ import SessionControls from './SessionControls'
 import WRStatsCards from './WRStatsCards'
 import SessionDetailCards from './SessionDetailCards'
 import DrillSummaryCard from './DrillSummaryCard'
+import SessionTimeline from './SessionTimeline'
+import PrintSummary from './PrintSummary'
 import SequencesTable from './SegmentsTable'
 import Image from 'next/image'
 
@@ -30,7 +32,15 @@ export default function BipStopwatch() {
 
   return (
     <div className="min-h-screen text-bip-text font-sans">
-      <div className="mx-auto max-w-3xl px-4 py-8 space-y-5">
+      {/* ── Print-only summary (hidden on screen) ─────────────────────── */}
+      <PrintSummary
+        sequences={sw.sequences}
+        sessionStats={sw.sessionStats}
+        drillSummaries={sw.drillSummaries}
+        sessionDetail={sw.sessionDetail}
+      />
+
+      <div className="print:hidden mx-auto max-w-3xl px-4 py-8 space-y-5">
         {/* ── Header ────────────────────────────────────────────────────── */}
         <header className="text-center pb-2">
           <div className="flex justify-center mb-2">
@@ -96,6 +106,13 @@ export default function BipStopwatch() {
         {/* ── Drill Breakdown ───────────────────────────────────────────── */}
         <DrillSummaryCard summaries={sw.drillSummaries} />
 
+        {/* ── Session Timeline ──────────────────────────────────────────── */}
+        <SessionTimeline
+          sequences={sw.sequences}
+          activeDrill={sw.activeDrill}
+          elapsedMs={sw.elapsedMs}
+        />
+
         {/* ── Session Controls ──────────────────────────────────────────── */}
         <SessionControls
           sessionFinished={sw.sessionFinished}
@@ -104,6 +121,7 @@ export default function BipStopwatch() {
           onFinishSession={handleFinishSession}
           onExportCSV={sw.handleExportCSV}
           onExportCatapult={sw.handleExportCatapult}
+          onPrint={() => window.print()}
           onResetSession={handleResetSession}
         />
 
