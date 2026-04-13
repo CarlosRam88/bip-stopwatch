@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import type { Sequence, WRStats, DrillSummary, SessionDetailStats } from '../lib/types'
 import { formatDuration } from '../lib/utils'
 
@@ -54,26 +53,62 @@ function TimelineBar({ sequences }: { sequences: Sequence[] }) {
   const totalMs = sequences.reduce((s, q) => s + q.durationMs, 0)
   if (totalMs === 0) return null
 
+  // Compute drill label positions
+  const drillLabels: { drillNumber: number; drillName: string; leftPct: number }[] = []
+  let cumMs = 0
+  let prevDrillNum: number | null = null
+  for (const seq of sequences) {
+    if (seq.drillNumber !== prevDrillNum) {
+      drillLabels.push({ drillNumber: seq.drillNumber, drillName: seq.drillName, leftPct: (cumMs / totalMs) * 100 })
+      prevDrillNum = seq.drillNumber
+    }
+    cumMs += seq.durationMs
+  }
+
   return (
-    <div style={{ display: 'flex', height: 28, width: '100%', borderRadius: 6, overflow: 'hidden', backgroundColor: C.panel }}>
-      {sequences.map((seq, idx) => {
-        const w = (seq.durationMs / totalMs) * 100
-        const prev = idx > 0 ? sequences[idx - 1].drillNumber : null
-        const boundary = prev !== null && seq.drillNumber !== prev
-        return (
-          <div
-            key={seq.id}
-            title={`${seq.drillName} · ${seq.state === 'in-play' ? 'In Play' : 'Out of Play'} · ${formatDuration(seq.durationMs)}`}
-            style={{
-              height: '100%',
-              width: `${w}%`,
-              minWidth: w > 0 ? 2 : 0,
-              backgroundColor: seq.state === 'in-play' ? C.inPlay : C.outPlay,
-              borderLeft: boundary ? `4px solid ${C.bg}` : undefined,
-            }}
-          />
-        )
-      })}
+    <div style={{ position: 'relative', height: 28, width: '100%', borderRadius: 6, overflow: 'hidden', backgroundColor: C.panel }}>
+      {/* Colour segments */}
+      <div style={{ display: 'flex', height: '100%' }}>
+        {sequences.map((seq, idx) => {
+          const w = (seq.durationMs / totalMs) * 100
+          const prev = idx > 0 ? sequences[idx - 1].drillNumber : null
+          const boundary = prev !== null && seq.drillNumber !== prev
+          return (
+            <div
+              key={seq.id}
+              style={{
+                height: '100%',
+                width: `${w}%`,
+                minWidth: w > 0 ? 2 : 0,
+                backgroundColor: seq.state === 'in-play' ? C.inPlay : C.outPlay,
+                borderLeft: boundary ? `4px solid ${C.bg}` : undefined,
+              }}
+            />
+          )
+        })}
+      </div>
+      {/* Drill name overlays */}
+      {drillLabels.map((lbl) => (
+        <div
+          key={lbl.drillNumber}
+          style={{
+            position: 'absolute', top: 0, bottom: 0,
+            left: `calc(${lbl.leftPct}% + 8px)`,
+            display: 'flex', alignItems: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <span style={{
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: 10,
+            fontWeight: 700,
+            whiteSpace: 'nowrap',
+            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+          }}>
+            {lbl.drillName}
+          </span>
+        </div>
+      ))}
     </div>
   )
 }
@@ -147,10 +182,11 @@ export default function PrintSummary({
         marginBottom: 28,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Image src="/scotlandlogo.png" alt="Scottish Rugby" width={56} height={56} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/scotlandlogo.png" alt="Scottish Rugby" width={56} height={56} loading="eager" />
           <div>
             <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 22, letterSpacing: '0.2em', color: C.accent }}>
-              BIP STOPWATCH
+              BIP REPORT
             </div>
             <div style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: C.muted, marginTop: 2 }}>
               Scottish Rugby Athletic Performance &amp; Sports Science

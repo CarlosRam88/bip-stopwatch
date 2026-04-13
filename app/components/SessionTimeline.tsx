@@ -39,6 +39,22 @@ export default function SessionTimeline({ sequences, activeDrill, elapsedMs }: S
       : []),
   ]
 
+  // Compute left-offset % for the first segment of each drill
+  const drillLabels: { drillNumber: number; drillName: string; leftPct: number }[] = []
+  let cumMs = 0
+  let prevDrillNum: number | null = null
+  for (const seg of segments) {
+    if (seg.drillNumber !== prevDrillNum) {
+      drillLabels.push({
+        drillNumber: seg.drillNumber,
+        drillName: seg.drillName,
+        leftPct: (cumMs / totalMs) * 100,
+      })
+      prevDrillNum = seg.drillNumber
+    }
+    cumMs += seg.durationMs
+  }
+
   return (
     <section className="rounded-lg border border-bip-border bg-bip-surface p-4 space-y-3">
       {/* Header */}
@@ -59,8 +75,9 @@ export default function SessionTimeline({ sequences, activeDrill, elapsedMs }: S
         </div>
       </div>
 
-      {/* Bar */}
-      <div className="flex h-9 w-full overflow-hidden rounded-md bg-bip-panel">
+      {/* Bar — relative wrapper lets us overlay drill name labels */}
+      <div className="relative flex h-9 w-full overflow-hidden rounded-md bg-bip-panel">
+        {/* Colour segments */}
         {segments.map((seg, idx) => {
           const widthPct = (seg.durationMs / totalMs) * 100
           const prevDrillNumber = idx > 0 ? segments[idx - 1].drillNumber : null
@@ -71,7 +88,7 @@ export default function SessionTimeline({ sequences, activeDrill, elapsedMs }: S
             <div
               key={seg.id}
               title={`${seg.drillName} · ${isInPlay ? 'In Play' : 'Out of Play'} · ${formatDuration(seg.durationMs)}`}
-              className={`h-full relative transition-[width] duration-100 ${
+              className={`h-full transition-[width] duration-100 ${
                 isInPlay ? 'bg-in-play' : 'bg-out-play'
               } ${isDrillBoundary ? 'border-l-4 border-bip-panel' : ''} ${
                 seg.isActive ? 'opacity-70' : ''
@@ -80,6 +97,22 @@ export default function SessionTimeline({ sequences, activeDrill, elapsedMs }: S
             />
           )
         })}
+
+        {/* Drill name overlays */}
+        {drillLabels.map((lbl) => (
+          <div
+            key={lbl.drillNumber}
+            className="absolute top-0 bottom-0 flex items-center pointer-events-none"
+            style={{ left: `calc(${lbl.leftPct}% + 8px)` }}
+          >
+            <span
+              className="text-white/80 text-xs font-semibold whitespace-nowrap"
+              style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
+            >
+              {lbl.drillName}
+            </span>
+          </div>
+        ))}
       </div>
     </section>
   )
