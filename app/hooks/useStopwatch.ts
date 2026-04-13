@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Sequence, ActiveDrill, WRStats, SessionDetailStats, DrillSummary } from '../lib/types'
-import { formatDate, exportToCSV, computeWRStats, computeSessionDetailStats } from '../lib/utils'
+import { formatDate, exportToCSV, exportCatapultJSON, computeWRStats, computeSessionDetailStats } from '../lib/utils'
 
 export interface StopwatchReturn {
   // ── State ──────────────────────────────────────────────────────────────────
@@ -43,6 +43,7 @@ export interface StopwatchReturn {
   revertLastToggle: () => void
   finishSession: () => void
   handleExportCSV: () => void
+  handleExportCatapult: () => void
   resetSession: () => void
 }
 
@@ -161,6 +162,11 @@ export function useStopwatch(): StopwatchReturn {
     exportToCSV(sequences)
   }, [sequences])
 
+  const handleExportCatapult = useCallback(() => {
+    if (sequences.length === 0) return
+    exportCatapultJSON(sequences)
+  }, [sequences])
+
   const resetSession = useCallback(() => {
     setDayCode('')
     setDrillNameInput('')
@@ -263,6 +269,7 @@ export function useStopwatch(): StopwatchReturn {
     revertLastToggle,
     finishSession,
     handleExportCSV,
+    handleExportCatapult,
     resetSession,
   }
 }

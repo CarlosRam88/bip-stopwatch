@@ -6,6 +6,7 @@ interface SessionControlsProps {
   canFinish: boolean
   onFinishSession: () => void
   onExportCSV: () => void
+  onExportCatapult: () => void
   onResetSession: () => void
 }
 
@@ -15,6 +16,7 @@ export default function SessionControls({
   canFinish,
   onFinishSession,
   onExportCSV,
+  onExportCatapult,
   onResetSession,
 }: SessionControlsProps) {
   return (
@@ -48,6 +50,19 @@ export default function SessionControls({
                      disabled:cursor-not-allowed disabled:opacity-30"
         >
           Export CSV
+        </button>
+
+        {/* Export Catapult JSON */}
+        <button
+          onClick={onExportCatapult}
+          disabled={!canExport}
+          className="rounded px-5 py-2.5 text-sm font-semibold tracking-wide uppercase
+                     border border-bip-accent/60 text-bip-accent
+                     hover:bg-bip-accent/10 active:bg-bip-accent/20
+                     transition-colors duration-150
+                     disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          Export Catapult
         </button>
 
         {/* Reset Session */}

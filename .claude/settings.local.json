@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebSearch",
+      "WebFetch(domain:support.catapultsports.com)",
+      "WebFetch(domain:catapultr.catapultsports.com)"
     ]
   }
 }

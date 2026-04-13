@@ -96,6 +96,72 @@ export function computeSessionDetailStats(
   }
 }
 
+/** Export In Play sequences as a Catapult Openfield JSON annotation file */
+export function exportCatapultJSON(sequences: Sequence[]): void {
+  const inPlay = sequences.filter((s) => s.state === 'in-play')
+  if (inPlay.length === 0) return
+
+  const uuid = () => crypto.randomUUID().toUpperCase()
+
+  const activityId = uuid()   // placeholder for the GPS activity parent
+  const rootId = uuid()
+
+  const allStart = sequences.reduce((min, s) => Math.min(min, s.startTimestamp), Infinity)
+  const allEnd = sequences.reduce((max, s) => Math.max(max, s.endTimestamp), 0)
+
+  const annotations = inPlay.map((seq) => ({
+    id: uuid(),
+    parentId: rootId,
+    startTime: new Date(seq.startTimestamp).toISOString(),
+    displayName: `${seq.drillName} - Ball In Play`,
+    category: 'Ball In Play',
+    type: 'annotation',
+    metaData: [],
+    endTime: new Date(seq.endTimestamp).toISOString(),
+    athletes: [],
+  }))
+
+  const rootPeriod = {
+    id: rootId,
+    parentId: activityId,
+    startTime: new Date(allStart).toISOString(),
+    displayName: 'BIP Annotations',
+    category: 'CpFullData',
+    type: 'period',
+    metaData: [],
+    endTime: new Date(allEnd).toISOString(),
+    athletes: [],
+  }
+
+  const output = {
+    activity: {
+      exportedOn: new Date().toISOString(),
+      season: '',
+      venue: '',
+      description: 'BIP Annotations',
+    },
+    teams: [],
+    officials: [],
+    athletes: [],
+    categoryDescriptions: [
+      { id: 'CpFullData', displayName: 'CpFullData' },
+      { id: 'Ball In Play', displayName: 'Ball In Play' },
+    ],
+    parameterDescriptions: [],
+    timePeriods: [...annotations, rootPeriod],
+  }
+
+  const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `bip-catapult-${new Date().toISOString().slice(0, 10)}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 /** Export all sequences to a CSV file and trigger a browser download */
 export function exportToCSV(sequences: Sequence[]): void {
   const headers = [

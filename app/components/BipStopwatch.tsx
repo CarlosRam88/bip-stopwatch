@@ -103,6 +103,7 @@ export default function BipStopwatch() {
           canFinish={sw.canFinish}
           onFinishSession={handleFinishSession}
           onExportCSV={sw.handleExportCSV}
+          onExportCatapult={sw.handleExportCatapult}
           onResetSession={handleResetSession}
         />
 
