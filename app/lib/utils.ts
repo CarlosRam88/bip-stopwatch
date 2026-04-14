@@ -113,7 +113,7 @@ export function exportCatapultJSON(sequences: Sequence[]): void {
     id: uuid(),
     parentId: rootId,
     startTime: new Date(seq.startTimestamp).toISOString(),
-    displayName: `${seq.drillName} - Ball In Play`,
+    displayName: 'Ball In Play',
     category: 'Ball In Play',
     type: 'annotation',
     metaData: [],
