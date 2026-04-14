@@ -113,9 +113,12 @@ export function useStopwatch(): StopwatchReturn {
 
   const stopDrill = useCallback(() => {
     if (!activeDrill) return
-    const endTime = Date.now()
-    const closed = buildSequence(activeDrill, endTime)
-    setSequences((prev) => [...prev, closed])
+    // Discard the current sequence if it is Out of Play — drills must end on In Play
+    if (activeDrill.state === 'in-play') {
+      const endTime = Date.now()
+      const closed = buildSequence(activeDrill, endTime)
+      setSequences((prev) => [...prev, closed])
+    }
     setActiveDrill(null)
     setDrillNameInput('')
   }, [activeDrill, buildSequence])
@@ -148,9 +151,12 @@ export function useStopwatch(): StopwatchReturn {
 
   const finishSession = useCallback(() => {
     if (activeDrill) {
-      const endTime = Date.now()
-      const closed = buildSequence(activeDrill, endTime)
-      setSequences((prev) => [...prev, closed])
+      // Discard the current sequence if it is Out of Play — drills must end on In Play
+      if (activeDrill.state === 'in-play') {
+        const endTime = Date.now()
+        const closed = buildSequence(activeDrill, endTime)
+        setSequences((prev) => [...prev, closed])
+      }
       setActiveDrill(null)
       setDrillNameInput('')
     }

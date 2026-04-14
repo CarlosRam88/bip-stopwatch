@@ -1,6 +1,7 @@
 'use client'
 
 import { useStopwatch } from '../hooks/useStopwatch'
+import { useEffect } from 'react'
 import { DAY_CODES } from '../lib/types'
 import DrillSetup from './DrillSetup'
 import ActiveDrillPanel from './ActiveDrillPanel'
@@ -29,6 +30,21 @@ export default function BipStopwatch() {
       sw.resetSession()
     }
   }
+
+  // Spacebar toggles In Play / Out of Play when a drill is active
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return
+      // Don't fire if focus is inside an input or button
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (!sw.canToggle) return
+      e.preventDefault()
+      sw.toggle()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [sw.canToggle, sw.toggle])
 
   return (
     <div className="min-h-screen text-bip-text font-sans">
