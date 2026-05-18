@@ -10,6 +10,18 @@ interface SequencesTableProps {
 export default function SequencesTable({ sequences }: SequencesTableProps) {
   if (sequences.length === 0) return null
 
+  // Average In Play duration per drill (from closed sequences only)
+  const drillAvgBip = new Map<number, number>()
+  const acc = new Map<number, { ms: number; count: number }>()
+  for (const seq of sequences) {
+    if (seq.state !== 'in-play') continue
+    const prev = acc.get(seq.drillNumber) ?? { ms: 0, count: 0 }
+    acc.set(seq.drillNumber, { ms: prev.ms + seq.durationMs, count: prev.count + 1 })
+  }
+  for (const [num, { ms, count }] of acc) {
+    drillAvgBip.set(num, Math.round(ms / count))
+  }
+
   return (
     <section className="rounded-lg border border-bip-border bg-bip-surface overflow-hidden">
       <header className="px-4 py-3 border-b border-bip-border flex items-center justify-between">
@@ -25,7 +37,7 @@ export default function SequencesTable({ sequences }: SequencesTableProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-bip-border text-left">
-              {['Drill Name', 'Seq #', 'State', 'Duration'].map(
+              {['Drill Name', 'Seq #', 'State', 'Duration', 'Avg BIP'].map(
                 (h) => (
                   <th
                     key={h}
@@ -72,6 +84,11 @@ export default function SequencesTable({ sequences }: SequencesTableProps) {
                   </td>
                   <td className="px-4 py-2.5 font-mono text-bip-text whitespace-nowrap">
                     {formatDuration(seq.durationMs)}
+                  </td>
+                  <td className="px-4 py-2.5 font-mono text-bip-muted whitespace-nowrap">
+                    {drillAvgBip.has(seq.drillNumber)
+                      ? formatDuration(drillAvgBip.get(seq.drillNumber)!)
+                      : '—'}
                   </td>
                 </tr>
               )

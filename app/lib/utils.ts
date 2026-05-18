@@ -34,13 +34,14 @@ export function computeWRStats(
 ): WRStats {
   let inPlayMs = 0
   let outOfPlayMs = 0
+  let inPlayCount = 0
 
   for (const seq of sequences) {
-    if (seq.state === 'in-play') inPlayMs += seq.durationMs
+    if (seq.state === 'in-play') { inPlayMs += seq.durationMs; inPlayCount++ }
     else outOfPlayMs += seq.durationMs
   }
 
-  if (activeState === 'in-play') inPlayMs += elapsedMs
+  if (activeState === 'in-play') { inPlayMs += elapsedMs; inPlayCount++ }
   else if (activeState === 'out-of-play') outOfPlayMs += elapsedMs
 
   const totalMs = inPlayMs + outOfPlayMs
@@ -49,6 +50,7 @@ export function computeWRStats(
     outOfPlayMs,
     totalMs,
     percentage: totalMs > 0 ? Math.round((inPlayMs / totalMs) * 100) : null,
+    avgInPlayMs: inPlayCount > 0 ? Math.round(inPlayMs / inPlayCount) : null,
   }
 }
 

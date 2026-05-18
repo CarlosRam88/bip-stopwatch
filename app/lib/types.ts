@@ -33,6 +33,8 @@ export interface WRStats {
   totalMs: number
   /** null when totalMs === 0 (no data yet) */
   percentage: number | null
+  /** null when there are no In Play sequences */
+  avgInPlayMs: number | null
 }
 
 export interface DrillSummary {

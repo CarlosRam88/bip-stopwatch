@@ -126,6 +126,12 @@ function WRCard({ title, subtitle, isLive, stats }: WRCardProps) {
             {hasData ? formatDuration(stats!.totalMs) : '—'}
           </span>
         </div>
+        <div className="flex items-center justify-between">
+          <span className="font-medium text-bip-muted">Avg BIP</span>
+          <span className="font-mono text-bip-text">
+            {hasData && stats!.avgInPlayMs !== null ? formatDuration(stats!.avgInPlayMs) : '—'}
+          </span>
+        </div>
       </div>
     </div>
   )
